@@ -4,7 +4,7 @@ export default {
     port: 5432,
     username: 'postgres',
     password: 'postgres',
-    database: 'devbuguer',
+    database: 'devburguer',
     define:{
     timestamps: true,
     underscored: true,
