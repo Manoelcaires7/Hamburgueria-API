@@ -1,7 +1,7 @@
 import * as Yup from 'yup'
 import Product from '../models/product';
+import { Sequelize } from 'sequelize';
 class productController {
-
     async store(req, res) {
         const schema = Yup.object({
             name: Yup.string().required(),
@@ -16,16 +16,23 @@ class productController {
         };
 
         const {filename: path} = req.file;
-        const { name, price, category } = req.body;
+        const {name, price, category} = req.body;
         const product = await Product.create({
-            name,
-            price,
-            category,
-            path,
-        });
+          name,
+          price,
+          category,
+          path,
+        },
+        );
 
-        return res.status(201).json({product})
+        return res.status(201).json({ product })
+}
+
+    async index(req, res){
+      const products = await Product.findAll();  
+
+      return res.json(products);
     }
 
-}
+};
 export default new productController();
