@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import authConfig from '../config/authConfig';
+import authConfig from '../../config/authConfig';
 
 
 function authMiddleware(req, res, next) {
