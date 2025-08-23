@@ -1,12 +1,11 @@
 import * as Yup from 'yup'
 import Product from '../models/product';
-import { Sequelize } from 'sequelize';
 class productController {
     async store(req, res) {
         const schema = Yup.object({
             name: Yup.string().required(),
             price: Yup.number().required(),
-            category: Yup.string().required(),
+            category_id: Yup.number().required(),
         });
 
         try {
@@ -16,11 +15,11 @@ class productController {
         };
 
         const {filename: path} = req.file;
-        const {name, price, category} = req.body;
+        const {name, price, category_id} = req.body;
         const product = await Product.create({
           name,
           price,
-          category,
+          category_id,
           path,
         },
         );
