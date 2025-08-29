@@ -1,5 +1,6 @@
 import * as Yup from 'yup'
 import Category from '../models/Category';
+import User from '../models/User';
 class categoryController {
     async store(req, res) {
         const schema = Yup.object({
@@ -11,6 +12,12 @@ class categoryController {
         } catch (err) {
             return res.status(400).json({ error: err.errors });
         };
+
+        const {admin: isAdmin} = await User.findByPk(req.userId);
+
+        if(!isAdmin) {
+          return res.status(401).json();
+        }
 
         const {name} = req.body;
 

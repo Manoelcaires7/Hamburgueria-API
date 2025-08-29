@@ -2,6 +2,7 @@ import * as Yup from 'yup'
 import Product from '../models/product';
 import Order from '../schemas/Order';
 import Category from '../models/Category';
+import User from '../models/User';
 
 class OrderController {
     async store(req, res) {
@@ -11,7 +12,7 @@ class OrderController {
                     id: Yup.number().required(),
                     quantity: Yup.number().required(),
                 })
-        ),
+            ),
         });
 
         try {
@@ -20,25 +21,25 @@ class OrderController {
             return res.status(400).json({ error: err.errors });
         };
 
-        const {products} = req.body;
+        const { products } = req.body;
         const productsIds = products.map((product) => product.id);
         const findProducts = await Product.findAll({
             where: {
                 id: productsIds,
             },
-            include:[
-            {
-                model: Category,
-                as: "category",
-                attributes:["name"]
-            },
+            include: [
+                {
+                    model: Category,
+                    as: "category",
+                    attributes: ["name"]
+                },
             ],
         });
 
 
         const formattedProducts = findProducts.map((product) => {
 
-            const productIndex = products.findIndex(item => item.id ===product.id);
+            const productIndex = products.findIndex(item => item.id === product.id);
 
             const newProduct = {
                 id: product.id,
@@ -49,8 +50,7 @@ class OrderController {
                 quantity: products[productIndex].quantity,
             };
             return newProduct;
-        }) 
-
+        });
 
         const order = {
             user: {
@@ -58,10 +58,47 @@ class OrderController {
                 name: req.userName,
             },
             products: formattedProducts,
+            status: 'pedido Realizado',
         };
 
-        return res.status(201).json(order)
-}
+        const newOrder = await Order.create(order);
+
+        return res.status(201).json(newOrder);
+    }
+
+    async index(req, res) {
+        const orders = await Order.find();
+        return res.json(orders);
+    }
+
+    async update(req, res) {
+        const schema = Yup.object({
+            status: Yup.string().required()
+        });
+
+        try {
+            schema.validateSync(req.body, { abortEarly: false });
+        } catch (err) {
+            return res.status(400).json({ error: err.errors });
+        };
+                
+        const {admin: isAdmin} = await User.findByPk(req.userId);
+
+        if(!isAdmin) {
+          return res.status(401).json();
+        }
+
+        const {id} = req.params;
+        const {status} = req.body;
+
+        try{
+        await Order.updateOne({_id: id}, {status});
+        } catch (err){
+            return res.status(400).json({error: err.message})
+        }
+        return res.json({mensage : 'status update sucessefuly'})
+    }
 
 };
+
 export default new OrderController();
