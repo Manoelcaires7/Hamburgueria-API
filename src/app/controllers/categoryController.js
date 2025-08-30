@@ -5,6 +5,7 @@ class categoryController {
     async store(req, res) {
         const schema = Yup.object({
             name: Yup.string().required(),
+
         });
 
         try {
@@ -19,6 +20,7 @@ class categoryController {
           return res.status(401).json();
         }
 
+        const {filename: path} = req.file
         const {name} = req.body;
 
         const categoryExists = await Category.findOne({
@@ -30,7 +32,8 @@ class categoryController {
 
 
         const {id} = await Category.create({
-          name
+          name,
+          path
         });
 
         return res.status(201).json({id, name} )
