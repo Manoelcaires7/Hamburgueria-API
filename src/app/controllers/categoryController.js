@@ -60,7 +60,7 @@ class categoryController {
 
     const categoryExists = await Category.findByPk(id);
     if (!categoryExists) {
-      return res.status(400).json({ error: 'Make sure the category ID is correct' });
+      return res.status(400).json({ message: 'Make sure the category ID is correct' });
     };
 
     let path;
@@ -68,15 +68,18 @@ class categoryController {
       path = req.file.filename;
     };
 
-
     const { name } = req.body;
 
+
     if (name) {
+
       const categoryNameExists = await Category.findOne({
         where: { name }
       });
-      if (!categoryNameExists) {
-        return res.status(400).json({ error: 'Category already exists.' });
+ 
+      if (categoryNameExists && categoryNameExists.id != +id) {
+    
+        return res.status(400).json({ error: 'Category already exists.' })
       }
     };
 
