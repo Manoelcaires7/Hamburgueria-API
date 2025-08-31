@@ -8,12 +8,11 @@ class Category extends Model {
             url: {
                 type: Sequelize.VIRTUAL,
                 get() {
-                    return `http://localhost:3001/product-file/${this.path}`
+                    return `http://localhost:3001/category-file/${this.path}`
                 },
             }},
             {
                 sequelize,
-                tableName: 'categories'
             },
         );
         return this;
